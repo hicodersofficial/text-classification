@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sentiment Analysis</title>
+    <script
+      src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"
+      type="module"
+    ></script>
+  </head>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #06080d;
+      font-family: "Poppins";
+      color: #fff;
+    }
+
+    #form {
+      width: 450px;
+    }
+    #form textarea {
+      display: block;
+      box-sizing: border-box;
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      outline: none;
+      background-color: #131313;
+      border: 1px solid #494949;
+      caret-color: orange;
+      color: #fff;
+      font-size: 18px;
+      max-width: 100%;
+      min-width: 100%;
+      min-height: 110px;
+      max-height: 300px;
+      font-family: "Poppins";
+    }
+    .submit {
+      width: 100%;
+      display: block;
+      padding: 8px 16px;
+      border-radius: 4px;
+      margin-top: 8px;
+      outline: none;
+      border: 1px solid #333;
+      font-weight: 500;
+      font-family: "Poppins";
+      background: linear-gradient(to right, #e2df05, #dab408);
+      transition: all 0.3s ease-in;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .submit:hover {
+      background: linear-gradient(to right, #e2df05, #e9c218);
+    }
+    #image {
+      width: 450px;
+      box-sizing: border-box;
+      margin-top: 1rem;
+    }
+
+    .result {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+
+  <body>
+    <div>
+      <form id="form">
+        <textarea
+          type="text"
+          id="review"
+          placeholder="Enter your feedback"
+        ></textarea>
+        <button class="submit">Submit</button>
+      </form>
+      <div id="result" class="result"></div>
+    </div>
+    <script type="module">
+      const form = document.querySelector("#form");
+      const resultDiv = document.querySelector("#result");
+      const image = document.querySelector("#image");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        loader(true);
+        const result = await analyze(form.review.value);
+        const label = result[0].label;
+        loader(false);
+
+        if (label === "POSITIVE") {
+          resultDiv.innerHTML = `<dotlottie-player
+    src="https://lottie.host/8b6ff905-f71d-4bbf-b625-e325aeab4bc5/PVnpqzC4rY.lottie"
+    background="transparent"
+    speed="1"
+    loop
+    id="image"
+    style="width: 200px; height: 200px"
+    autoplay
+  ></dotlottie-player>`;
+        } else {
+          resultDiv.innerHTML = `<dotlottie-player
+    src="https://lottie.host/77caac29-b27f-45be-b47b-b74c2fd16ea0/C5NudMtI9k.lottie"
+    background="transparent"
+    speed="1"
+    loop
+    id="image"
+    style="width: 200px; height: 200px"
+    autoplay
+  ></dotlottie-player>`;
+        }
+      });
+      function loader(show) {
+        if (show) {
+          resultDiv.innerHTML = `<dotlottie-player
+    src="https://lottie.host/1a155ee8-382c-42ff-a0cf-4a479e6bee0f/5UuiVuqXsW.lottie"
+    background="transparent"
+    speed="1"
+    loop
+    id="image"
+    style="width: 200px; height: 200px"
+    autoplay
+  ></dotlottie-player>`;
+        } else {
+          resultDiv.innerHTML = "";
+        }
+      }
+
+      // Sentiment Analysis
+      import { pipeline } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.4.0";
+      async function analyze(input) {
+        const pipe = await pipeline("sentiment-analysis");
+        const out = await pipe(input);
+
+        return out;
+      }
+    </script>
+  </body>
+</html>
